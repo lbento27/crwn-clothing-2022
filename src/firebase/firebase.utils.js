@@ -13,6 +13,30 @@ const config = {
   measurementId: "G-D92Q8MN7MD",
 };
 
+export const creatUserProfileDocument = async (userAuth, additionalData) => {
+  //only store user if they sign in we get null if theres no sign in
+  if (!userAuth) return; // if user object is null, do nothing
+
+  const userRef = firestore.doc(`users/${userAuth.uid}`);
+
+  const snapShot = await userRef.get(); //.get give us a snapshot with a property of exists
+
+  //console.log(snapShot);
+
+  //check if that user exist in our database, if not
+  if (!snapShot.exists) {
+    const { displayName, email } = userAuth;
+    const createdAt = new Date();
+
+    try {
+      await userRef.set({ displayName, email, createdAt, ...additionalData });
+    } catch (error) {
+      console.log("error creating user", error.message);
+    }
+  }
+  return userRef;
+};
+
 firebase.initializeApp(config);
 
 export const auth = firebase.auth();

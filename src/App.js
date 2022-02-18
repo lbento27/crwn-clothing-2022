@@ -9,7 +9,7 @@ import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up
 
 import Header from "./components/header/header.component.jsx";
 
-import { auth } from "./firebase/firebase.utils";
+import { auth, creatUserProfileDocument } from "./firebase/firebase.utils";
 
 class App extends React.Component {
   constructor() {
@@ -23,10 +23,23 @@ class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged((user) => {
-      this.setState({ currentUser: user });
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = await creatUserProfileDocument(userAuth);
 
-      //console.log(user);
+        userRef.onSnapshot((snapShot) => {
+          this.setState(
+            {
+              currentUser: {
+                id: snapShot.id,
+                ...snapShot.data(),
+              },
+            } //,() => console.log(this.state) // setState is async so we need to consoleLog as a second parameter
+          );
+        });
+      } else {
+        this.setState({ currentUser: userAuth }); //if user log out same as set it so null
+      }
     });
   }
 
