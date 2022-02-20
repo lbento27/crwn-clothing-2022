@@ -9,7 +9,10 @@ import { auth } from "../../firebase/firebase.utils";
 
 import { connect } from "react-redux";
 
-const Header = ({ currentUser }) => (
+import CartIcon from "../cart-icon/cart-icon.components";
+import CartDropdown from "../cart-dropdown/cart-dropdown.component";
+
+const Header = ({ currentUser, hidden }) => (
   <div className="header">
     <Link className="logo-container" to="/">
       <Logo className="logo" />
@@ -33,12 +36,17 @@ const Header = ({ currentUser }) => (
           </Link>
         )
       }
+      <CartIcon />
     </div>
+    {hidden ? null : <CartDropdown />}
   </div>
 );
 
-const mapStateToProps = (state) => ({
-  currentUser: state.user.currentUser, //user form de root reducer witch points to userReducer and we want de currentUser
+const mapStateToProps = ({ user: { currentUser }, cart: { hidden } }) => ({
+  //nested destructuring
+  currentUser,
+  hidden,
+  //currentUser: state.user.currentUser, //user form de root reducer witch points to userReducer and we want de currentUser
 });
 
 export default connect(mapStateToProps)(Header);
