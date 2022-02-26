@@ -12,6 +12,10 @@ import { connect } from "react-redux";
 import CartIcon from "../cart-icon/cart-icon.components";
 import CartDropdown from "../cart-dropdown/cart-dropdown.component";
 
+import { createStructuredSelector } from "reselect";
+import { selectCartHidden } from "../../redux/cart/cart.selectors";
+import { selectCurrentUser } from "../../redux/user/user.selectors";
+
 const Header = ({ currentUser, hidden }) => (
   <div className="header">
     <Link className="logo-container" to="/">
@@ -41,12 +45,17 @@ const Header = ({ currentUser, hidden }) => (
     {hidden ? null : <CartDropdown />}
   </div>
 );
+//old code before using memoizing and reselect
+//const mapStateToProps = ({ user: { currentUser }, cart: { hidden } }) => ({
+//nested destructuring
+//currentUser,
+//hidden,
+//currentUser: state.user.currentUser, //user form de root reducer witch points to userReducer and we want de currentUser
+//});
 
-const mapStateToProps = ({ user: { currentUser }, cart: { hidden } }) => ({
-  //nested destructuring
-  currentUser,
-  hidden,
-  //currentUser: state.user.currentUser, //user form de root reducer witch points to userReducer and we want de currentUser
-});
+const mapStateToProps = createStructuredSelector({
+  currentUser: selectCurrentUser,
+  hidden: selectCartHidden,
+}); // createStructuredSelector automatically pass the state to the selectors
 
 export default connect(mapStateToProps)(Header);
