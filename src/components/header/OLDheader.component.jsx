@@ -1,13 +1,7 @@
 import React from "react";
-//import "./header.styles.scss";
-import {
-  HeaderContainer,
-  LogoContainer,
-  OptionsContainer,
-  OptionLink,
-} from "./header.styles";
+import "./header.styles.scss";
 
-//import { Link } from "react-router-dom"; // so the logo can act as a link
+import { Link } from "react-router-dom"; // so the logo can act as a link
 
 import { ReactComponent as Logo } from "../../assets/crown.svg";
 
@@ -23,27 +17,33 @@ import { selectCartHidden } from "../../redux/cart/cart.selectors";
 import { selectCurrentUser } from "../../redux/user/user.selectors";
 
 const Header = ({ currentUser, hidden }) => (
-  <HeaderContainer>
-    <LogoContainer to="/">
+  <div className="header">
+    <Link className="logo-container" to="/">
       <Logo className="logo" />
-    </LogoContainer>
-    <OptionsContainer>
-      <OptionLink to="/shop">SHOP</OptionLink>
-      <OptionLink to="/shop">CONTACT</OptionLink>
+    </Link>
+    <div className="options">
+      <Link className="option" to="/shop">
+        SHOP
+      </Link>
+      <Link className="option" to="/shop">
+        CONTACT
+      </Link>
       {
         //object evaluates to true and null to false
         currentUser ? (
-          <OptionLink as="div" onClick={() => auth.signOut()}>
+          <div className="option" onClick={() => auth.signOut()}>
             SIGN OUT
-          </OptionLink>
+          </div>
         ) : (
-          <OptionLink to="/signin">SIGN IN</OptionLink>
+          <Link className="option" to="/signin">
+            SIGN IN
+          </Link>
         )
       }
       <CartIcon />
-    </OptionsContainer>
+    </div>
     {hidden ? null : <CartDropdown />}
-  </HeaderContainer>
+  </div>
 );
 //old code before using memoizing and reselect
 //const mapStateToProps = ({ user: { currentUser }, cart: { hidden } }) => ({
