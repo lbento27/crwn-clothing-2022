@@ -48,3 +48,23 @@ provider.setCustomParameters({ prompt: "select_account" });
 export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
 export default firebase;
+
+//function to add our database automatically to firebase on time after we remove from app.js
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  const collectionRef = firestore.collection(collectionKey);
+  //console.log(collectionRef);
+
+  const batch = firestore.batch(); //we use batch instead of set because we want our data to be added in full and set only set 1 at time and if it fails is going to add only half of the data
+
+  objectsToAdd.forEach((obj) => {
+    const newDocRef = collectionRef.doc(); //random generate a id() or use our names(obj.title) at this new document reference
+    //console.log(newDocRef);
+    batch.set(newDocRef, obj);
+  });
+
+  //fire our batch request
+  return await batch.commit(); //batch.commit- promise
+};
