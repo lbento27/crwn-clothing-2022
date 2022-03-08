@@ -68,3 +68,23 @@ export const addCollectionAndDocuments = async (
   //fire our batch request
   return await batch.commit(); //batch.commit- promise
 };
+
+//convert the array from firebase, shopDatabase to a object
+export const convertCollectionsSnapshotToMap = (collections) => {
+  const transformedCollection = collections.docs.map((doc) => {
+    const { title, items } = doc.data(); //pull the title and the items
+    return {
+      routeName: encodeURI(title.toLowerCase()), //encodeURI converts any string to characters that the url can read
+      id: doc.id,
+      items,
+      title,
+    };
+  });
+
+  //console.log(transformedCollection);
+
+  return transformedCollection.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator; // this will set the key to for ex hat: hatCollections, jackets: jacketsCollection
+  }, {});
+};
