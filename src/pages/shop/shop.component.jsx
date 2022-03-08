@@ -40,6 +40,14 @@ class ShopPage extends React.Component {
         this.setState({ loading: false });
       }
     );
+
+    //example if we use a normal api call (promise pattern) instead of the observer pattern given by firebase
+    // fetch(
+    //   "https://firestore.googleapis.com/v1/projects/crwn-db-2022-13eb0/databases/(default)/documents/collections"
+    // )
+    //   .then((response) => response.json())
+    //   .then((collection) => console.log(collection));
+    //end example
   }
 
   render() {
