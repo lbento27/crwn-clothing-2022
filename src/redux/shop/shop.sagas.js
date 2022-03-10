@@ -1,5 +1,5 @@
-import { takeEvery, call, put } from "redux-saga/effects"; //takeEvery listen to every action that fires
-
+import { takeLatest, call, put } from "redux-saga/effects"; //takeEvery listen to every action that fires
+//takeLatest if fire multiple times only the last getting resolve will have the most up to date data
 import ShopActionTypes from "./shop.types";
 
 import {
@@ -27,7 +27,7 @@ export function* fetchCollectionsAsync() {
 
 //this will pause when a specific action comes
 export function* fetchCollectionsStart() {
-  yield takeEvery(
+  yield takeLatest(
     ShopActionTypes.FETCH_COLLECTIONS_START,
     fetchCollectionsAsync
   );
