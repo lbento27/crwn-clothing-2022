@@ -13,11 +13,17 @@ import {
   signInFailure,
   signOutFailure,
   signOutSuccess,
+  signUpFailure,
+  signUpSuccess,
 } from "./user.actions";
 
-export function* getSnapshotFromUserAuth(userAuth) {
+export function* getSnapshotFromUserAuth(userAuth, additionalData) {
   try {
-    const userRef = yield call(creatUserProfileDocument, userAuth); //same as we did before in out componentDidMount on app.js
+    const userRef = yield call(
+      creatUserProfileDocument,
+      userAuth,
+      additionalData
+    ); //same as we did before in out componentDidMount on app.js
     const userSnapshot = yield userRef.get();
     yield put(signInSuccess({ id: userSnapshot.id, ...userSnapshot.data() })); //put(), puts things back into our regular Redux flow
   } catch (error) {
@@ -79,11 +85,34 @@ export function* onSignOutStart() {
   yield takeLatest(UserActionsTypes.SIGN_OUT_START, signOut);
 }
 
+export function* signUp({ payload: { email, password, displayName } }) {
+  try {
+    const { user } = yield auth.createUserWithEmailAndPassword(email, password);
+    yield put(signUpSuccess({ user, additionalData: { displayName } }));
+  } catch (error) {
+    yield put(signUpFailure);
+  }
+}
+
+export function* onSignUpStart() {
+  yield takeLatest(UserActionsTypes.SIGN_UP_START, signUp);
+}
+
+export function* signInAfterSignUp({ payload: { user, additionalData } }) {
+  yield getSnapshotFromUserAuth(user, additionalData);
+}
+
+export function* onSignUpSuccess() {
+  yield takeLatest(UserActionsTypes.SIGN_UP_SUCCESS, signInAfterSignUp);
+}
+
 export function* userSagas() {
   yield all([
     call(onGoogleSignInStart),
     call(onEmailSignInStart),
     call(onCheckUserSession),
     call(onSignOutStart),
+    call(onSignUpStart),
+    call(onSignUpSuccess),
   ]);
 }
