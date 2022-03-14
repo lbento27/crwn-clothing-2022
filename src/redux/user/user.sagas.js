@@ -5,6 +5,7 @@ import {
   googleProvider,
   auth,
   creatUserProfileDocument,
+  getCurrentUser,
 } from "../../firebase/firebase.utils";
 
 import { signInSuccess, signInFailure } from "./user.actions";
@@ -45,6 +46,25 @@ export function* onEmailSignInStart() {
   yield takeLatest(UserActionsTypes.EMAIL_SIGN_IN_START, signInWithEmail);
 }
 
+export function* isUserAuthenticated() {
+  try {
+    const userAuth = yield getCurrentUser(); //we can get null or a user object
+    if (!userAuth) return;
+    //if instead there is a value
+    yield getSnapshotFromUserAuth(userAuth);
+  } catch (error) {
+    yield put(signInFailure(error));
+  }
+}
+
+export function* onCheckUserSession() {
+  yield takeLatest(UserActionsTypes.CHECK_USER_SESSION, isUserAuthenticated);
+}
+
 export function* userSagas() {
-  yield all([call(onGoogleSignInStart), call(onEmailSignInStart)]);
+  yield all([
+    call(onGoogleSignInStart),
+    call(onEmailSignInStart),
+    call(onCheckUserSession),
+  ]);
 }

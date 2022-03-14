@@ -88,3 +88,12 @@ export const convertCollectionsSnapshotToMap = (collections) => {
     return accumulator; // this will set the key to for ex hat: hatCollections, jackets: jacketsCollection
   }, {});
 };
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = auth.onAuthStateChanged((userAuth) => {
+      unsubscribe();
+      resolve(userAuth);
+    }, reject);
+  });
+};
